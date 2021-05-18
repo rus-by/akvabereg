@@ -6,15 +6,13 @@ const {
 
 
 var projectSchema = new Schema({
-    image:{
-        type: String,
-        required: true,
-        unique: true
-        
-    },
     title: {
         type: String,
         required: true
+    },
+    image: {
+        type: String,
+        unique: false
     },
     subTitle: {
         type: String,
@@ -28,6 +26,10 @@ var projectSchema = new Schema({
         type: Date,
         required: true
     },
+    changes: [{
+        ref: 'Project',
+        type: Schema.Types.ObjectId
+    }],
     status: {
         type: Number,
         required: true

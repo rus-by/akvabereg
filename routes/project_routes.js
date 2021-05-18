@@ -1,93 +1,107 @@
 const express = require('express')
 const Project = require('../models/project')
-const STATES = require('../helpers/states')
+// const STATES = require('../helpers/states')
 const routes = express.Router()
 const multer = require('multer')
 const path = require('path')
 const fs = require('fs')
+const fsPromises = fs.promises
 
+const PROJECT_STATES ={
+    DELETED: 0,
+    CREATED: 1,
+    BACKUP: 2
+}
 const upload = multer({
-    dest: './uploads'
+    dest: '../uploads'
+})
+
+routes.get('/all', async (req, res) => {
+    const allProjects = await Project.find({status: {$eq: PROJECT_STATES.CREATED}}).populate('changes')
+    console.log(req.cookies)
+    res.json(allProjects)
+})
+
+routes.get('/get_img', async(req,res)=>{
+    const name = req.query.name
+    res.sendFile(path.join(__dirname, name));
+})
+
+routes.use(async (req,res,next)=>{
+    if(req.user){
+        next()
+    }
+    else{
+        res.send(401)
+    }
 })
 
 routes.post('/new_project', upload.single('file'), async (req, res) => {
-    
-    const target = req.file.destination + req.file.originalname
-    const targetPath = path.join(__dirname, target)
-    const tempPath = req.file.path
-    fs.rename(tempPath, targetPath, async (err) => {
-        if (err) return console.log(err, res)
-        var project = new Project({
-        image: target,
-        title: req.body.title,
-        subTitle: req.body.subTitle,
-        date: req.body.date,
-        created: new Date(),
-        status: STATES.CREATED,
-        author: req.user.id
+    try{    
+    const truePath = await reName(req.file)
+        console.log(truePath)
+        const project = new Project({
+            image: truePath,
+            title: req.body.title,
+            subTitle: req.body.subTitle,
+            date: req.body.date,
+            created: new Date(),
+            status: PROJECT_STATES.CREATED,
+            author: req.user._id
     })
     await project.save()
     res.json(project)
+    }
+       catch(error){
+           res.send(error)
+        console.log(error)
+}
+        
+})
 
+async function reName(file){
+
+    const extname = path.extname(file.originalname).toLowerCase();
+    const allowedExt = ['.png','.jpg','.jpeg']
+    
+    if(allowedExt.includes(extname)){
+        const tempPath = file.path
+        const truePath = tempPath + extname
+        const targetPath = path.join(__dirname, truePath)
+        await fsPromises.rename(tempPath, targetPath)
+        return truePath
+    }
+    else{
+        throw new Error('"reNane()" extension false')
+    }
+}
+routes.post('/edit', upload.single('file'), async (req, res) => {
+    let truePath 
+    if(req.file){
+        truePath = await reName(req.file)   
+    }
+    const id = req.body.id
+    const newTitle = req.body.title
+    const newSubTitle = req.body.subTitle
+    const newDate = req.body.date
+    const project = await Project.findOne({_id:id})
+    const changes = Object.assign([],project.changes)
+    project.status = PROJECT_STATES.BACKUP
+    const img = truePath? truePath:  project.image
+    changes.push(id)
+    const newProject = new Project({
+        title: newTitle,
+        subTitle: newSubTitle,
+        date: newDate,
+        status: PROJECT_STATES.CREATED,
+        image: img,
+        created: project.created,
+        author: project.author,
+        changes: changes
     })
-})
-
-
-//routes.get()
-//
-//
-//
-//}
-//
-//routes.get
-//res.sendFile(path.join(__dirname, name));
-//
-
-
-routes.get('/all', async (req, res) => {
-    const allTasks = await Project.find()
-    res.json(allTasks)
-})
-routes.post('/create', async (req, res) => {
-    if (req.body.title) {
-        const newTask = {
-            title: req.body.title,
-            done: false
-        }
-        const task = new Task(newTask)
-        await task.save()
-        res.json(task)
-    } else {
-        res.status(500).send({
-            error: 'Something failed!'
-        })
-    }
-})
-routes.get('/edit', async (req, res) => {
-    const id = req.query._id
-    const newTitle = req.query.title
-    const task = await Task.findById(id)
-    task.title = newTitle
-    await task.save()
-    res.json('task is saved')
-})
-routes.delete('/delete', async (req, res) => {
-    const id = req.query._id
-    await Task.findByIdAndDelete(id)
-    res.json('deleted')
-})
-routes.get('/copy', async (req, res) => {
-    const allTasks = await Task.find()
-    const index = allTasks.findIndex((el) => el._id == req.query._id)
-    const newTask = {
-        title: req.query.title,
-        done: false
-    }
-    const task = new Task(newTask)
-    await task.save()
-    allTasks.splice(index + 1, 0, newTask)
-    res.json(allTasks)
-
+    await project.save()
+    await newProject.save()
+    res.json('project is edited and saved')
 })
 
 module.exports = routes

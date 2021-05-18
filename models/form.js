@@ -18,7 +18,7 @@ var FormSchema = new Schema({
         type: String,
     },
     date: {
-        type: Date,
+        type: String
     },
     created: {
         type: Date,
@@ -27,6 +27,9 @@ var FormSchema = new Schema({
     status:{
         type: Number,
         required: true
+    },
+    time:{
+        type: String
     }
 })
 

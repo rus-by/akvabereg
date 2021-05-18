@@ -15,8 +15,10 @@ var guestSchema = new Schema({
     }],
     status:{
         type: Number
+    },
+    data:{
+        type: Array
     }
-    
 })
 
 const Guest = mongoose.model('Guest', guestSchema);

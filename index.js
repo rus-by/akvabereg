@@ -1,8 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-
-
 const cors = require('cors')
 const app = express();
 var session = require('express-session');
@@ -14,9 +12,9 @@ const passport = require('./passport');
 const userRoutes = require('./routes/user_routes');
 const formRoutes = require('./routes/form_routes');
 const projectRoutes = require('./routes/project_routes');
+const { get } = require('./routes/form_routes');
 
-
-mongoose.connect('mongodb://localhost:27017/akvabereg', { useNewUrlParser: true }).
+mongoose.connect('mongodb+srv://admin:0kJxFLOZD3WsZiDS@cluster0.qrccy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true }).
 then(db => console.log('[OK] DB is connected')).
 catch(err => console.error(err));
 app.use(cors({credentials: true, origin: 'http://localhost:8080'}))
@@ -31,6 +29,8 @@ app.use('/api/user', userRoutes)
 app.use('/api/lead', formRoutes)
 app.use('/api/project', projectRoutes)
 
+app.use(express.static(__dirname+'/public/'))
+app.get(/.*/)
 
 app.listen(app.get('port'), () => {
     console.log(`[OK] Server is running on localhost:${app.get('port')}`);

@@ -4,17 +4,18 @@ const STATES = require('../helpers/states')
 const routes = express.Router()
 const Guest = require('../models/guest')
 
-
 routes.post('/create', async (req, res, next) => {
   var form = new Form({name: req.body.name, 
                        phone: req.body.phone,
                        text: req.body.text, 
                        date: req.body.date,
+                       time: req.body.time,
                        created: new Date(),
                        status: STATES.CREATED
                       });
   await form.save();
-    res.json(form)
+  res.json(true)
+    // res.json(form)
 });
 
 routes.post('/new_guest', async (req,res)=>{
@@ -40,9 +41,52 @@ routes.post('/new_visit', async (req,res)=>{
   }
   
 })
+routes.post('/complete', async (req,res)=>{
+  const id= req.body.id
+  const data = {name:req.body.name,phone:req.body.phone,date: new Date()}
+  const result = await Guest.findOne({_id:id})
+  if(result){
+    result.data.push(data)
+    await result.save()
+    res.json(true)
+  }
+  else{
+    res.json('smth goes wrong')
+  }
+  
+})
 
 routes.get('/all', async (req, res) => {
     const allForms = await Form.find()
     res.json(allForms)
 })
+
+routes.post('/edit', async (req, res) => {
+  const id = req.body.id
+  const newName = req.body.name
+  const newPhone = req.body.phone
+  const lead = await Form.findById(id)
+  lead.name = newName
+  lead.phone = newPhone
+  await lead.save()
+  res.json('lead is changed and saved')
+})
+
+routes.post('/delete', async (req,res) =>{
+  const id = req.body.id
+  const lead = await Form.findById(id)
+  lead.status = STATES.DELETED
+  await lead.save()
+  res.json('lead is deleted')
+})
+
+routes.post('/status', async (req,res) =>{
+  const id = req.body.id
+  const status = req.body.status    
+  const lead = await Form.findById(id)
+  lead.status = status
+  await lead.save()
+  res.json('lead status is changed')
+})
+
 module.exports = routes
