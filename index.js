@@ -1,6 +1,7 @@
+require('dotenv').config()
+const port = process.env.PORT || 3000;
 const express = require('express');
 const mongoose = require('mongoose');
-
 const cors = require('cors')
 const app = express();
 var session = require('express-session');
@@ -24,7 +25,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json())
 app.options('*', cors())
-app.set('port', 3001);
+app.set('port', port);
 app.use('/api/user', userRoutes)
 app.use('/api/lead', formRoutes)
 app.use('/api/project', projectRoutes)
