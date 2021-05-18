@@ -1,7 +1,7 @@
 const express = require('express')
 const AWS = require('aws-sdk');
 const multerS3 = require('multer-s3');
-const s3bucket = new AWS.S3({
+const s3 = new AWS.S3({
     accessKeyId: 'AKIAT77347UL6TTO5BPK',
     secretAccessKey: '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'
   });
@@ -23,7 +23,7 @@ const PROJECT_STATES ={
 // })
 const upload = multer({
     storage: multerS3({
-        s3bucket, // instance of your S3 bucket
+        s3, // instance of your S3 bucket
       contentDisposition: 'attachment',
       contentType: multerS3.AUTO_CONTENT_TYPE,
       bucket(req, file, callb) {
@@ -48,7 +48,6 @@ const upload = multer({
       },
     }),
     limits: {}, // object with custom limits like file size,
-    fileFilter: filterFiles, // method returns true or false after filtering the file
   });
 
 routes.get('/all', async (req, res) => {
