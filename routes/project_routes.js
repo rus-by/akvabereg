@@ -1,4 +1,10 @@
 const express = require('express')
+const AWS = require('aws-sdk');
+const multerS3 = require('multer-s3');
+const s3bucket = new AWS.S3({
+    accessKeyId: 'AKIAT77347UL6TTO5BPK',
+    secretAccessKey: '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'
+  });
 const Project = require('../models/project')
 // const STATES = require('../helpers/states')
 const routes = express.Router()
@@ -12,9 +18,38 @@ const PROJECT_STATES ={
     CREATED: 1,
     BACKUP: 2
 }
+// const upload = multer({
+//     dest: '../uploads'
+// })
 const upload = multer({
-    dest: '../uploads'
-})
+    storage: multerS3({
+        s3bucket, // instance of your S3 bucket
+      contentDisposition: 'attachment',
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      bucket(req, file, callb) {
+        // logic to dynamically select bucket
+        // or a simple `bucket: __bucket-name__,`
+        callb(null, '_my_bucket_');
+      },
+      metadata(req, file, cb) {
+        cb(null, {
+          'X-Content-Type-Options': 'nosniff',
+          'Content-Security-Policy': 'default-src none; sandbox',
+          'X-Content-Security-Policy': 'default-src none; sandbox',
+        });
+      },
+      async key(req, file, abCallback) {
+        try {
+          // logic to dynamically select key or destination
+          abCallback(null, ' _dest/key_');
+        } catch (err) {
+          abCallback(err);
+        }
+      },
+    }),
+    limits: {}, // object with custom limits like file size,
+    fileFilter: filterFiles, // method returns true or false after filtering the file
+  });
 
 routes.get('/all', async (req, res) => {
     const allProjects = await Project.find({status: {$eq: PROJECT_STATES.CREATED}}).populate('changes')
@@ -36,12 +71,14 @@ routes.use(async (req,res,next)=>{
     }
 })
 
+
+
 routes.post('/new_project', upload.single('file'), async (req, res) => {
     try{    
-    const truePath = await reName(req.file)
-        console.log(truePath)
+    // const truePath = await reName(req.file)
+
         const project = new Project({
-            image: truePath,
+            image: req.file.name,
             title: req.body.title,
             subTitle: req.body.subTitle,
             date: req.body.date,
@@ -76,10 +113,10 @@ async function reName(file){
     }
 }
 routes.post('/edit', upload.single('file'), async (req, res) => {
-    let truePath 
-    if(req.file){
-        truePath = await reName(req.file)   
-    }
+    // let truePath 
+    // if(req.file){
+    //     truePath = await reName(req.file)   
+    // }
     const id = req.body.id
     const newTitle = req.body.title
     const newSubTitle = req.body.subTitle
@@ -87,7 +124,7 @@ routes.post('/edit', upload.single('file'), async (req, res) => {
     const project = await Project.findOne({_id:id})
     const changes = Object.assign([],project.changes)
     project.status = PROJECT_STATES.BACKUP
-    const img = truePath? truePath:  project.image
+    const img = req.file.name
     changes.push(id)
     const newProject = new Project({
         title: newTitle,
