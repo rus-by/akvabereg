@@ -13,7 +13,6 @@ const passport = require('./passport');
 const userRoutes = require('./routes/user_routes');
 const formRoutes = require('./routes/form_routes');
 const projectRoutes = require('./routes/project_routes');
-const { get } = require('./routes/form_routes');
 
 mongoose.connect('mongodb+srv://admin:0kJxFLOZD3WsZiDS@cluster0.qrccy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true }).
 then(db => console.log('[OK] DB is connected')).
@@ -31,7 +30,9 @@ app.use('/api/lead', formRoutes)
 app.use('/api/project', projectRoutes)
 
 app.use(express.static(__dirname+'/public/'))
-app.get(/.*/)
+app.get(/.*/,(req,res)=>{
+    res.sendFile(__dirname+'/public/index.html')
+})
 
 app.listen(app.get('port'), () => {
     console.log(`[OK] Server is running on localhost:${app.get('port')}`);
