@@ -58,6 +58,7 @@ routes.use(async (req,res,next)=>{
 
 
 routes.post('/new_project', upload.single('file'), async (req, res) => {
+    console.log('start_func')
     try{    
         const project = new Project({
             image: req.file.location,
