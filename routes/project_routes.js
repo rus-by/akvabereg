@@ -2,10 +2,12 @@ const express = require('express')
 const AWS = require('aws-sdk');
 const multerS3 = require('multer-s3');
 const s3 = new AWS.S3({
-    accessKeyId: 'AKIAT77347ULQGZYKIME',
-    secretAccessKey: '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',
+    // accessKeyId: 'AKIAT77347ULQGZYKIME',
+    // secretAccessKey: '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',
     region: 'us-east-2'
   });
+
+const S3_BUCKET = process.env.S3_BUCKET
 const Project = require('../models/project')
 // const STATES = require('../helpers/states')
 const routes = express.Router()
@@ -23,7 +25,8 @@ const PROJECT_STATES ={
 const upload = multer({
   storage: multerS3({
       s3: s3,
-      bucket: 'akvabereg',
+    //   bucket: 'akvabereg',
+      bucket: S3_BUCKET,
       acl: 'public-read',
       key: function (req, file, cb) {
           console.log(file);
