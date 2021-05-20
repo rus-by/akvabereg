@@ -25,9 +25,9 @@ const PROJECT_STATES ={
 const upload = multer({
   storage: multerS3({
       s3: s3,
-    //   bucket: 'akvabereg',
-      bucket: S3_BUCKET,
-      acl: 'public-read',
+      bucket: 'akvabereg',
+    //   bucket: S3_BUCKET,
+      acl: 'public-read-write',
       key: function (req, file, cb) {
           console.log(file);
           cb(null, String(Date.now()));
