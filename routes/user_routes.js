@@ -17,6 +17,8 @@ const passport = require('../passport')
 //   });
 // });
 
+
+
 routes.post('/login',  (req, res, next) => {
   passport.authenticate('local',
     function(err, user, info) {
