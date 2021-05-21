@@ -55,6 +55,14 @@ routes.post('/complete', async (req,res)=>{
   }
   
 })
+routes.use(async (req,res,next)=>{
+  if(req.user){
+      next()
+  }
+  else{
+      res.send(401)
+  }
+})
 
 routes.get('/all', async (req, res) => {
     const allForms = await Form.find()
@@ -70,6 +78,11 @@ routes.post('/edit', async (req, res) => {
   lead.phone = newPhone
   await lead.save()
   res.json('lead is changed and saved')
+})
+routes.post('/filter', async (req,res) =>{
+  const filterStatus = req.body.status
+  const data = await Form.find({status: filterStatus})
+  res.json(data)
 })
 
 routes.post('/delete', async (req,res) =>{
