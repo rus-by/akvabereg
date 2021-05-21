@@ -1,13 +1,13 @@
 require('dotenv').config()
 const port = process.env.PORT || 3000;
-app.get('*', function (req, res, next) {
-    if (req.headers['x-forwarded-proto'] != 'https') res.redirect('https://akvabereg.ru' + req.url) 
-    else next() 
-   })
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors')
 const app = express();
+app.get('*', function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] != 'https') res.redirect('https://akvabereg.ru' + req.url) 
+    else next() 
+   })
 var session = require('express-session');
 const cookieParser = require('cookie-parser')
 const passport = require('./passport');
