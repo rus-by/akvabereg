@@ -15,10 +15,10 @@ const formRoutes = require('./routes/form_routes');
 const projectRoutes = require('./routes/project_routes');
 
 mongoose.connect('mongodb+srv://admin:0kJxFLOZD3WsZiDS@cluster0.qrccy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true }).
-then(db => console.log('[OK] DB is connected')).
-catch(err => console.error(err));
-app.use(cors({credentials: true, origin: 'http://localhost:8080'}))
-app.use(session({secret: 'SECRET'}))
+    then(db => console.log('[OK] DB is connected')).
+    catch(err => console.error(err));
+app.use(cors({ credentials: true, origin: 'http://localhost:8080' }))
+app.use(session({ secret: 'SECRET' }))
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -29,10 +29,14 @@ app.use('/api/user', userRoutes)
 app.use('/api/lead', formRoutes)
 app.use('/api/project', projectRoutes)
 
-app.use(express.static(__dirname+'/public/'))
-app.get(/.*/,(req,res)=>{
-    res.sendFile(__dirname+'/public/index.html')
+app.use(express.static(__dirname + '/public/'))
+app.get(/.*/, (req, res) => {
+    res.sendFile(__dirname + '/public/index.html')
 })
+app.get('*', function (req, res, next) {
+     if (req.headers['x-forwarded-proto'] != 'https') res.redirect('https://akvabereg.ru' + req.url) 
+     else next() 
+    })
 
 app.listen(app.get('port'), () => {
     console.log(`[OK] Server is running on localhost:${app.get('port')}`);

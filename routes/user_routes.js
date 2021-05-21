@@ -4,18 +4,18 @@ const routes = express.Router()
 const cors = require('cors')
 const passport = require('../passport');
 
-routes.post('/register', cors({credentials: true}), (req, res, next) => {
-  var user = new User({ username: req.body.username, password: req.body.password});
-  user.save(function(err) {
-    return err
-      ? next(err)
-      : req.logIn(user, function(err) {
-        return err
-          ? next(err)
-          : res.json(user);
-      });
-  });
-});
+// routes.post('/register', cors({credentials: true}), (req, res, next) => {
+//   var user = new User({ username: req.body.username, password: req.body.password});
+//   user.save(function(err) {
+//     return err
+//       ? next(err)
+//       : req.logIn(user, function(err) {
+//         return err
+//           ? next(err)
+//           : res.json(user);
+//       });
+//   });
+// });
 
 routes.post('/login',  (req, res, next) => {
   passport.authenticate('local',
