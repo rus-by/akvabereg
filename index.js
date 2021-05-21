@@ -1,5 +1,9 @@
 require('dotenv').config()
 const port = process.env.PORT || 3000;
+app.get('*', function (req, res, next) {
+    if (req.headers['x-forwarded-proto'] != 'https') res.redirect('https://akvabereg.ru' + req.url) 
+    else next() 
+   })
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors')
@@ -33,10 +37,6 @@ app.use(express.static(__dirname + '/public/'))
 app.get(/.*/, (req, res) => {
     res.sendFile(__dirname + '/public/index.html')
 })
-app.get('*', function (req, res, next) {
-     if (req.headers['x-forwarded-proto'] != 'https') res.redirect('https://akvabereg.ru' + req.url) 
-     else next() 
-    })
 
 app.listen(app.get('port'), () => {
     console.log(`[OK] Server is running on localhost:${app.get('port')}`);
