@@ -18,6 +18,9 @@ const passport = require('../passport')
 // });
 
 
+routes.post('/testAut', (req, res, next) => {
+  res.send(req.isAuthenticated())
+})
 
 routes.post('/login',  (req, res, next) => {
   passport.authenticate('local',
@@ -49,9 +52,6 @@ routes.get('/get', async (req, res) => {
   res.json(u)
 })
 
-routes.post('/testAut', (req, res, next) => {
-  res.send(req.isAuthenticated())
-})
 
 routes.get('/log_out', (req, res) =>{
     req.logout()
