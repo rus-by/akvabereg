@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 node_modules/.bin/uuid
 node_modules/@sindresorhus/is/package.json
 node_modules/@szmarczak/http-timer/package.json
@@ -2626,3 +2626,4 @@ node_modules/wrappy/package.json
 node_modules/write-file-atomic/package.json
 node_modules/xdg-basedir/package.json
 node_modules/xtend/package.json
+node_modules/@sindresorhus/is/package.json
