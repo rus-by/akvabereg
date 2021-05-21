@@ -2,7 +2,7 @@ const express = require('express')
 const User = require('../models/user')
 const routes = express.Router()
 const cors = require('cors')
-const passport = require('../passport');
+const passport = require('../passport')
 
 // routes.post('/register', cors({credentials: true}), (req, res, next) => {
 //   var user = new User({ username: req.body.username, password: req.body.password});
@@ -27,13 +27,13 @@ routes.post('/login',  (req, res, next) => {
           if (user) {
             res.send(user)
           } else {
-            res.send(info);
+            res.send(info)
           }
         })
       }
     }
-  )(req, res, next);
-});
+  )(req, res, next)
+})
 
 routes.get('/get', async (req, res) => {
   const u = await User.find({isDeleted: false}).populate('posts')
@@ -49,7 +49,7 @@ routes.get('/get', async (req, res) => {
 
 routes.post('/testAut', (req, res, next) => {
   res.send(req.isAuthenticated())
-});
+})
 
 routes.get('/log_out', (req, res) =>{
     req.logout()
