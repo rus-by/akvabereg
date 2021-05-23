@@ -18,8 +18,9 @@ const passport = require('../passport')
 // });
 
 
-routes.post('/testAut', (req, res, next) => {
-  res.send(req.isAuthenticated())
+routes.post('/testAuth', (req, res, next) => {
+  const response = {auth: req.isAuthenticated(), user: req.user}
+  res.send(response)
 })
 
 routes.post('/login',  (req, res, next) => {
