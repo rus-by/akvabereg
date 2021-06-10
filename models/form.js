@@ -18,7 +18,7 @@ var FormSchema = new Schema({
         type: String,
     },
     date: {
-        type: String
+        type: Date
     },
     created: {
         type: Date,

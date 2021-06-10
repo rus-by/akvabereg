@@ -84,7 +84,19 @@ routes.post('/filter', async (req,res) =>{
   const data = await Form.find({status: filterStatus})
   res.json(data)
 })
-
+routes.post('/filter/date' , async(req,res) =>{
+  const startDate =  req.body.startDate
+  const endDate =  req.body.endDate
+  const filter ={}
+  if(startDate){
+    filter.$gte = startDate
+  }
+  if(endDate){
+    filter.$lte = endDate
+  }
+  const data = await Form.find({date: filter})
+res.json(data)
+})
 routes.post('/delete', async (req,res) =>{
   const id = req.body.id
   const lead = await Form.findById(id)
@@ -92,7 +104,6 @@ routes.post('/delete', async (req,res) =>{
   await lead.save()
   res.json('lead is deleted')
 })
-
 routes.post('/status', async (req,res) =>{
   const id = req.body.id
   const status = req.body.status    
@@ -101,5 +112,4 @@ routes.post('/status', async (req,res) =>{
   await lead.save()
   res.json('lead status is changed')
 })
-
 module.exports = routes
