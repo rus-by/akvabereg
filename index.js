@@ -18,11 +18,15 @@ const userRoutes = require('./routes/user_routes');
 const formRoutes = require('./routes/form_routes');
 const projectRoutes = require('./routes/project_routes');
 
-mongoose.connect('mongodb+srv://admin:0kJxFLOZD3WsZiDS@cluster0.qrccy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true }).
-    then(db => console.log('[OK] DB is connected')).
-    catch(err => console.error(err));
+mongoose.connect('mongodb+srv://admin:0kJxFLOZD3WsZiDS@cluster0.qrccy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true }).
+then(db => console.log('[OK] DB is connected')).
+catch(err => console.error(err));
 app.use(cors({ credentials: true, origin: 'http://localhost:8080' }))
-app.use(session({ secret: 'SECRET' }))
+app.use(session({
+    secret: 'SECRET',
+    resave: true,
+    saveUninitialized: true
+}))
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(passport.session());
