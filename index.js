@@ -8,6 +8,7 @@ app.get(/.*/, function(req, res, next) {
     if (req.headers['x-forwarded-proto'] != 'https') res.redirect('https://www.akvabereg.ru' + req.url)
     else next()
 })
+
 const session = require('express-session');
 const cookieParser = require('cookie-parser')
 const passport = require('./passport');
