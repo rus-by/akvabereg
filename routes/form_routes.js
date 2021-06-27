@@ -108,7 +108,7 @@ routes.use(async(req, res, next) => {
 })
 
 routes.get('/all', async(req, res) => {
-    const allForms = await Form.find()
+    const allForms = await Form.find({ status: { $ne: STATES.DELETED } })
     res.json(allForms)
 })
 
