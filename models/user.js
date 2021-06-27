@@ -5,21 +5,32 @@ const { Schema } = mongoose;
 
 var UserSchema = new Schema({
     username: {
-      type: String,
-      unique: true,
-      required: true
+        type: String,
+        unique: true,
+        required: true
     },
     password: {
-      type: String,
-      required: true
+        type: String,
+        required: true
     },
-    isDeleted:{
+    created: {
+        type: Date,
+    },
+    status: {
+        type: Number,
+        required: true
+    },
+    isDeleted: {
         type: Boolean,
         default: false
-    }})
+    },
+    chatId: {
+        type: String
+    }
+})
 
 //    UserSchema.set('toObject', {virtuals: true})
 //    UserSchema.set('toJSON', {virtuals: true})
-    const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema);
 
-    module.exports = User;
+module.exports = User;
